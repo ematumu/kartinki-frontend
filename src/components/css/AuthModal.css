@@ -1,0 +1,79 @@
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.auth-tabs .tab {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 15px;
+  transition: all 0.3s;
+  color: var(--text-secondary);
+}
+
+.auth-tabs .tab.active {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  border-color: var(--bg-header);
+  font-weight: 600;
+}
+
+.auth-error {
+  background: #FFEBEE;
+  color: var(--error);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: 1px solid #FFCDD2;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-input {
+  padding: 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.3s;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--bg-header);
+  background: var(--bg-primary);
+}
+
+.auth-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.auth-submit {
+  padding: 15px;
+  background: var(--bg-header);
+  color: var(--bg-accent);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.auth-submit:hover {
+  background: #3D4F35;
+  transform: translateY(-2px);
+}

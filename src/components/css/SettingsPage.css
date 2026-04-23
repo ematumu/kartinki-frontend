@@ -1,0 +1,127 @@
+.settings-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.settings-container {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 30px;
+  background: var(--bg-secondary);
+  border-radius: 25px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.settings-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-right: 2px solid var(--bg-primary);
+  padding-right: 30px;
+}
+
+.settings-tab {
+  padding: 14px 20px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.settings-tab:hover {
+  background: var(--bg-primary);
+}
+
+.settings-tab.active {
+  background: var(--bg-header);
+  color: var(--bg-accent);
+}
+
+.settings-tab.logout {
+  color: var(--error);
+  margin-top: auto;
+}
+
+.settings-content {
+  padding: 20px;
+}
+
+.settings-content h2 {
+  color: var(--text-primary);
+  margin-bottom: 30px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.setting-item label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.setting-hint {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.upload-area-small {
+  width: 100px;
+  height: 100px;
+  border: 2px dashed var(--bg-header);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.upload-area-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-area-small span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  .settings-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .settings-sidebar {
+    border-right: none;
+    border-bottom: 2px solid var(--bg-primary);
+    padding-bottom: 20px;
+    padding-right: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .settings-tab {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+  }
+}

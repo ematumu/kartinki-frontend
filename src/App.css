@@ -1,0 +1,159 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(45, 58, 38, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  padding: 40px;
+  border-radius: 25px;
+  width: 90%;
+  max-width: 450px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: modalSlideIn 0.3s ease;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.follower-item {
+  transition: all 0.2s ease !important;
+}
+
+.follower-item:hover {
+  background: var(--bg-accent-light) !important;
+  border-color: var(--border-color) !important;
+  transform: translateX(5px) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.welcome-placeholder {
+  text-align: center;
+  padding: 100px 20px;
+  color: var(--text-primary);
+}
+
+.welcome-placeholder h2 {
+  font-size: 32px;
+  margin-bottom: 15px;
+  color: var(--text-primary);
+}
+
+.welcome-placeholder p {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.auth-prompt-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(45, 58, 38, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.auth-prompt {
+  background: var(--bg-secondary);
+  padding: 40px;
+  border-radius: 25px;
+  width: 90%;
+  max-width: 450px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: modalSlideIn 0.3s ease;
+  text-align: center;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-prompt-close {
+  position: absolute;
+  top: 15px; right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.auth-prompt-close:hover { background: var(--bg-primary); color: var(--text-primary); }
+
+.auth-prompt-icon {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-prompt-icon svg {
+  width: 80px;
+  height: 80px;
+  stroke: var(--text-secondary);
+}
+.auth-prompt h3 { color: var(--text-primary); font-size: 20px; margin-bottom: 15px; }
+.auth-prompt p { color: var(--text-secondary); font-size: 15px; line-height: 1.5; margin-bottom: 25px; }
+.auth-prompt-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+.auth-prompt-hint { font-size: 13px; color: var(--text-secondary); margin: 0; font-style: italic; }
+
+@media (max-width: 600px) {
+  .auth-prompt { padding: 30px 25px; }
+  .auth-prompt-buttons { flex-direction: column; }
+  .auth-prompt-buttons .btn { width: 100%; }
+}
