@@ -25,6 +25,7 @@ function App() {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false)
   const [selectedPostId, setSelectedPostId] = useState(null)
   const [viewTag, setViewTag] = useState(null)
+  const [showSearchAuthPrompt, setShowSearchAuthPrompt] = useState(false)
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
@@ -79,17 +80,17 @@ function App() {
   }, [])
 
   useEffect(() => {
-  const handleNavigateToTag = (e) => {
-    if (e.detail?.tagName) {
-      handleSearchTag(e.detail.tagName)
+    const handleNavigateToTag = (e) => {
+      if (e.detail?.tagName) {
+        handleSearchTag(e.detail.tagName)
+      }
     }
-  }
-  
-  window.addEventListener('navigateToTag', handleNavigateToTag)
-  return () => {
-    window.removeEventListener('navigateToTag', handleNavigateToTag)
-  }
-}, [currentView])
+    
+    window.addEventListener('navigateToTag', handleNavigateToTag)
+    return () => {
+      window.removeEventListener('navigateToTag', handleNavigateToTag)
+    }
+  }, [currentView])
 
   const openLogin = () => {
     setAuthMode('login')
@@ -129,6 +130,10 @@ function App() {
       setShowAuthPrompt(false)
       handleViewPost(selectedPostId)
       setSelectedPostId(null)
+    }
+    
+    if (showSearchAuthPrompt) {
+      setShowSearchAuthPrompt(false)
     }
   }
 
@@ -191,6 +196,10 @@ function App() {
     setCurrentView('tag')
   }
 
+  const handleSearchAuthRequest = () => {
+    setShowSearchAuthPrompt(true)
+  }
+
   return (
     <div className="app">
       <MainHeader 
@@ -207,6 +216,7 @@ function App() {
         feedType={feedType}
         onFeedTypeChange={setFeedType}
         onSearchTag={handleSearchTag}
+        onSearchAuthRequest={handleSearchAuthRequest}
       />
 
       <div className="main-container">
@@ -295,9 +305,6 @@ function App() {
       {showAuthPrompt && (
         <div className="auth-prompt-overlay" onClick={() => setShowAuthPrompt(false)}>
           <div className="auth-prompt" onClick={(e) => e.stopPropagation()}>
-            <button className="auth-prompt-close" onClick={() => setShowAuthPrompt(false)}>
-              ×
-            </button>
             
             <div className="auth-prompt-icon">
               <svg 
@@ -332,6 +339,54 @@ function App() {
                 className="btn btn-secondary" 
                 onClick={() => {
                   setShowAuthPrompt(false)
+                  setIsAuthModalOpen(true)
+                  setAuthMode('register')
+                }}
+              >
+                Регистрация
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSearchAuthPrompt && (
+        <div className="auth-prompt-overlay" onClick={() => setShowSearchAuthPrompt(false)}>
+          <div className="auth-prompt" onClick={(e) => e.stopPropagation()}>
+            
+            <div className="auth-prompt-icon">
+              <svg 
+                width="80" 
+                height="80" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="var(--text-secondary)" 
+                strokeWidth="1.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            
+            <h3>Поиск доступен только зарегистрированным пользователям</h3>
+            <p>Войдите или зарегистрируйтесь, чтобы искать посты, пользователей и теги</p>
+            <div className="auth-prompt-buttons">
+              <button 
+                className="btn btn-primary" 
+                onClick={() => {
+                  setShowSearchAuthPrompt(false)
+                  setIsAuthModalOpen(true)
+                  setAuthMode('login')
+                }}
+              >
+                Войти
+              </button>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => {
+                  setShowSearchAuthPrompt(false)
                   setIsAuthModalOpen(true)
                   setAuthMode('register')
                 }}

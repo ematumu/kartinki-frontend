@@ -35,7 +35,8 @@ export const CONFIG = {
       follow: (username) => `/api/users/${username}/follow`,
       followers: (username) => `/api/users/${username}/followers`,
       following: (username) => `/api/users/${username}/following`,
-      search: (query) => `/api/users/search/?q=${encodeURIComponent(query)}`
+      search: (query) => `/api/users/search/?q=${encodeURIComponent(query)}`,
+      removeFollower: (followerUsername) => `/api/users/followers/${followerUsername}`
     },
 
     tags: {

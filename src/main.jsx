@@ -14,6 +14,7 @@ import './components/css/TagPage.css'
 import './components/css/AuthModal.css'
 import './components/css/CreatePostModal.css'
 import './components/css/CommentsPanel.css'
+import './components/css/Modals.css'
 import './App.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

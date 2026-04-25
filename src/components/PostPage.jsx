@@ -209,41 +209,43 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
             <span>{new Date(post.created_at).toLocaleDateString('ru-RU')}</span>
           </div>
           
-          <div className="post-view-actions">
-            <button 
-              className={`action-btn ${isLiked ? 'liked' : ''}`}
-              onClick={handleLike}
-              disabled={liking}
-            >
-              <img 
-                src={isLiked ? heartFilled : heartOutline} 
-                alt="Like"
-                className={liking ? 'like-animation' : ''}
-              />
-              <span>{likesCount}</span>
-            </button>
-            
-            <button 
-              className="action-btn"
-              onClick={() => setShowCommentsPanel(true)}
-            >
-              <img src={commentIcon} alt="Comment" />
-              <span>Комментарии ({commentsCount})</span>
-            </button>
-            
-            <button 
-              className={`action-btn ${isBookmarked ? 'bookmarked' : ''}`}
-              onClick={handleBookmark}
-              disabled={bookmarking}
-            >
-              <img 
-                src={isBookmarked ? bookmarkFilled : bookmarkOutline} 
-                alt="Bookmark"
-                className={bookmarking ? 'like-animation' : ''}
-              />
-              <span>{isBookmarked ? 'В избранном' : 'В избранное'}</span>
-            </button>
-            
+        <div className="post-view-actions">
+          <button 
+            className={`action-btn ${isLiked ? 'liked' : ''}`}
+            onClick={handleLike}
+            disabled={liking}
+          >
+            <img 
+              src={isLiked ? heartFilled : heartOutline} 
+              alt="Like"
+              className={liking ? 'like-animation' : ''}
+            />
+            <span>{likesCount}</span>
+          </button>
+          
+          <button 
+            className="action-btn"
+            onClick={() => setShowCommentsPanel(true)}
+          >
+            <img src={commentIcon} alt="Comment" />
+            <span>Комментарии ({commentsCount})</span>
+          </button>
+          
+          <button 
+            className={`action-btn ${isBookmarked ? 'bookmarked' : ''}`}
+            onClick={handleBookmark}
+            disabled={bookmarking}
+          >
+            <img 
+              src={isBookmarked ? bookmarkFilled : bookmarkOutline} 
+              alt="Bookmark"
+              className={bookmarking ? 'like-animation' : ''}
+            />
+            <span>{isBookmarked ? 'В избранном' : 'В избранное'}</span>
+          </button>
+          
+          {/* ← КНОПКА ТОЛЬКО ДЛЯ АВТОРА */}
+          {isOwner && (
             <div style={{ position: 'relative' }}>
               <button 
                 className="action-btn" 
@@ -252,7 +254,7 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
                 <img src={moreIcon} alt="More" />
               </button>
               
-              {showActions && isOwner && (
+              {showActions && (
                 <div className="dropdown-menu" style={{ top: '40px', right: '0' }}>
                   <button onClick={handleDelete} style={{ color: '#d4a5a5' }}>
                     Удалить пост
@@ -260,7 +262,8 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
                 </div>
               )}
             </div>
-          </div>
+          )}
+        </div>
         </div>
       </div>
 

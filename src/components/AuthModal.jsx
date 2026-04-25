@@ -14,6 +14,20 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
     password2: ''
   })
 
+  const switchToLogin = () => {
+    if (registerData.username) {
+      setLoginData(prev => ({
+        ...prev,
+        username: registerData.username
+      }))
+    }
+    setActiveTab('login')
+  }
+
+  const switchToRegister = () => {
+    setActiveTab('register')
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
@@ -27,27 +41,15 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
       
       try {
         const fullProfile = await apiFetch(API.users.me, {
-          headers: {
-            'Authorization': `Bearer ${tokens.access_token}`
-          }
+          headers: { 'Authorization': `Bearer ${tokens.access_token}` }
         })
-
-        const userData = {
-          ...tokens,
-          ...fullProfile
-        }
-        
-        console.log('Full user data:', userData)
-        
+        const userData = { ...tokens, ...fullProfile }
         localStorage.setItem('user', JSON.stringify(userData))
         onAuthSuccess(userData)
         onClose()
       } catch (profileErr) {
         console.error('Failed to load profile:', profileErr)
-        const userData = {
-          ...tokens,
-          username: loginData.username
-        }
+        const userData = { ...tokens, username: loginData.username }
         localStorage.setItem('user', JSON.stringify(userData))
         onAuthSuccess(userData)
         onClose()
@@ -103,24 +105,15 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
       
       try {
         const fullProfile = await apiFetch(API.users.me, {
-          headers: {
-            'Authorization': `Bearer ${tokens.access_token}`
-          }
+          headers: { 'Authorization': `Bearer ${tokens.access_token}` }
         })
-        
-        const userData = {
-          ...tokens,
-          ...fullProfile
-        }
-        
+        const userData = { ...tokens, ...fullProfile }
         localStorage.setItem('user', JSON.stringify(userData))
         onAuthSuccess(userData)
-        
-
         onClose()
       } catch (profileErr) {
         console.error('Failed to load profile after register:', profileErr)
-        setActiveTab('login')
+        switchToLogin()
         setRegisterData({ username: '', nickname: '', password: '', password2: '' })
       }
       
@@ -139,13 +132,13 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
         <div className="auth-tabs">
           <button 
             className={`tab ${activeTab === 'login' ? 'active' : ''}`}
-            onClick={() => setActiveTab('login')}
+            onClick={switchToLogin}
           >
             Войти
           </button>
           <button 
             className={`tab ${activeTab === 'register' ? 'active' : ''}`}
-            onClick={() => setActiveTab('register')}
+            onClick={switchToRegister}
           >
             Регистрация
           </button>

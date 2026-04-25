@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { API, API_BASE } from '../config'
 import PostCard from './PostCard'
-
+import Masonry from 'react-masonry-css'
 const tags = ['Иллюстрация', 'Цифровое', 'Живопись', 'Фото', 'Скетч', 'Концепт', 'Аниме', 'Фэнтези']
 
 function MainContent({ isLoggedIn, user, feedType, onPostClick, onViewProfile }) {
@@ -71,35 +71,38 @@ function MainContent({ isLoggedIn, user, feedType, onPostClick, onViewProfile })
     onPostClick(postId)
   }
 
-
   return (
     <main className="main-content">
-      <div className="feed-tabs">
-        <button 
-          className={`tab ${activeTab === 'latest' ? 'active' : ''}`}
-          onClick={() => setActiveTab('latest')}
-        >
-          Недавнее
-        </button>
+          <div className="feed-tabs">
+      <button 
+        className={`tab ${activeTab === 'latest' ? 'active' : ''}`}
+        onClick={() => setActiveTab('latest')}
+      >
+        Недавнее
+      </button>
+      
+      <button 
+        className={`tab ${activeTab === 'popular' ? 'active' : ''}`}
+        onClick={() => setActiveTab('popular')}
+      >
+        Популярное
+      </button>
+      
+      {isLoggedIn && (
         <button 
           className={`tab ${activeTab === 'following' ? 'active' : ''}`}
-          onClick={() => {
-            if (!isLoggedIn) {
-              alert('Войдите, чтобы видеть посты подписок')
-              return
-            }
-            setActiveTab('following')
-          }}
+          onClick={() => setActiveTab('following')}
         >
           Подписки
         </button>
-        
-        <div className="tags-container">
-          {tags.map(tag => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
-        </div>
+      )}
+      
+      <div className="tags-container">
+        {tags.map(tag => (
+          <span key={tag} className="tag">{tag}</span>
+        ))}
       </div>
+    </div>
 
       {loading ? (
         <div className="loading">Загрузка...</div>
@@ -111,7 +114,11 @@ function MainContent({ isLoggedIn, user, feedType, onPostClick, onViewProfile })
           <p>Будьте первым, кто создаст пост</p>
         </div>
       ) : (
-        <div className="posts-grid">
+        <Masonry
+          breakpointCols={{ default: 3, 1100: 2, 700: 1 }}
+          className="masonry-grid"
+          columnClassName="masonry-grid-column"
+        >
           {posts.map(post => (
             <PostCard 
               key={post.id} 
@@ -121,7 +128,7 @@ function MainContent({ isLoggedIn, user, feedType, onPostClick, onViewProfile })
               onViewProfile={onViewProfile}
             />
           ))}
-        </div>
+        </Masonry>
       )}
     </main>
   )

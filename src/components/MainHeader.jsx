@@ -4,7 +4,21 @@ import searchIcon from '../assets/icons/search.svg'
 import userIcon from '../assets/icons/user.svg'
 import { getAvatarUrl, API_BASE, apiFetch, API } from '../config'
 
-function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout, onCreatePost, onViewProfile, onSettings, onBookmarks, feedType, onFeedTypeChange, onSearchTag }) {
+function MainHeader({ 
+  isLoggedIn, 
+  user, 
+  onLoginClick, 
+  onRegisterClick, 
+  onLogout, 
+  onCreatePost, 
+  onViewProfile, 
+  onSettings, 
+  onBookmarks, 
+  feedType, 
+  onFeedTypeChange, 
+  onSearchTag,
+  onSearchAuthRequest
+}) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState({ users: [], tags: [] })
   const [showSearchResults, setShowSearchResults] = useState(false)
@@ -13,7 +27,6 @@ function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout,
   
   const searchRef = useRef(null)
   const avatarUrl = getAvatarUrl(user)
-
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -26,6 +39,12 @@ function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout,
   }, [])
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      setSearchResults({ users: [], tags: [] })
+      setShowSearchResults(false)
+      return
+    }
+
     if (searchQuery.trim().length < 2) {
       setSearchResults({ users: [], tags: [] })
       setShowSearchResults(false)
@@ -54,7 +73,7 @@ function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout,
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [searchQuery])
+  }, [searchQuery, isLoggedIn])
 
   const handleUserSelect = (username) => {
     setSearchQuery('')
@@ -86,10 +105,30 @@ function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout,
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
+    
+    if (!isLoggedIn) {
+      if (onSearchAuthRequest) {
+        onSearchAuthRequest()
+      }
+      return
+    }
+    
     if (searchResults.users.length > 0) {
       handleUserSelect(searchResults.users[0].username)
     } else if (searchResults.tags.length > 0) {
       handleTagSelect(searchResults.tags[0].name)
+    }
+  }
+
+  const handleSearchFocus = () => {
+    if (!isLoggedIn) {
+      if (onSearchAuthRequest) {
+        onSearchAuthRequest()
+      }
+      return
+    }
+    if (searchQuery.trim().length >= 2) {
+      setShowSearchResults(true)
     }
   }
 
@@ -106,18 +145,25 @@ function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout,
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', width: '100%' }}>
             <input
               type="text"
-              placeholder="Поиск"
+              placeholder={isLoggedIn ? "Поиск" : "Войдите для поиска"}
               className="search-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => searchQuery.trim().length >= 2 && setShowSearchResults(true)}
+              onFocus={handleSearchFocus}
+              readOnly={!isLoggedIn}
+              style={!isLoggedIn ? { cursor: 'not-allowed', opacity: 0.6 } : {}}
             />
-            <button type="submit" className="search-button">
+            <button 
+              type="submit" 
+              className="search-button"
+              disabled={!isLoggedIn}
+              style={!isLoggedIn ? { cursor: 'not-allowed', opacity: 0.6 } : {}}
+            >
               <img src={searchIcon} alt="Search" />
             </button>
           </form>
 
-          {showSearchResults && (searchQuery.trim().length >= 2) && (
+          {showSearchResults && (searchQuery.trim().length >= 2) && isLoggedIn && (
             <div className="search-results-dropdown">
               {searchLoading ? (
                 <div className="search-loading">Поиск...</div>
@@ -128,30 +174,30 @@ function MainHeader({ isLoggedIn, user, onLoginClick, onRegisterClick, onLogout,
                   {searchResults.users.length > 0 && (
                     <>
                       <div className="search-section-title">Пользователи</div>
-                      {searchResults.users.map(user => (
+                      {searchResults.users.map(userItem => (
                         <button
-                          key={user.id}
+                          key={userItem.id}
                           className="search-result-item"
-                          onClick={() => handleUserSelect(user.username)}
+                          onClick={() => handleUserSelect(userItem.username)}
                           style={{ cursor: 'pointer' }}
                         >
                           <div className="search-result-avatar">
-                            {user.avatar_path ? (
+                            {userItem.avatar_path ? (
                               <img 
-                                src={`${API_BASE}/uploads/avatars/${user.avatar_path}`} 
-                                alt={user.username}
+                                src={`${API_BASE}/uploads/avatars/${userItem.avatar_path}`} 
+                                alt={userItem.username}
                               />
                             ) : (
-                              <span>{user.username?.[0]?.toUpperCase()}</span>
+                              <span>{userItem.username?.[0]?.toUpperCase()}</span>
                             )}
                           </div>
                           <div className="search-result-info">
                             <span className="search-result-nickname">
-                              {user.nickname || user.username}
+                              {userItem.nickname || userItem.username}
                             </span>
-                            <span className="search-result-username">@{user.username}</span>
+                            <span className="search-result-username">@{userItem.username}</span>
                           </div>
-                          {user.is_following && (
+                          {userItem.is_following && (
                             <span className="search-result-following">✓ Подписан</span>
                           )}
                         </button>

@@ -1,9 +1,9 @@
 .main-header {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 30px;
+  gap: 20px;
   align-items: center;
-  padding: 15px 40px;
+  padding: 8px 30px;
   background: var(--bg-header);
   color: var(--text-light);
   position: sticky;
@@ -23,8 +23,8 @@
 }
 
 .logo img {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -43,10 +43,10 @@
   display: flex;
   align-items: center;
   background: var(--bg-primary);
-  border-radius: 30px;
-  padding: 6px 20px; 
+  border-radius: 25px;
+  padding: 4px 15px;
   width: 100%;
-  max-width: 650px;
+  max-width: 600px;
   border: 2px solid var(--border-color);
 }
 
@@ -55,10 +55,10 @@
   border: none;
   background: transparent;
   outline: none;
-  padding: 6px 10px;
-  font-size: 14px;
+  padding: 4px 8px;
+  font-size: 13px;
   color: var(--text-primary);
-  height: 32px;
+  height: 28px;
 }
 
 .search-input::placeholder {
@@ -69,26 +69,26 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 3px;
   display: flex;
   align-items: center;
 }
 
 .search-button img {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   position: relative;
 }
 
 .profile-icon {
-  width: 45px;
-  height: 45px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--bg-accent);
   display: flex;
@@ -96,7 +96,7 @@
   justify-content: center;
   cursor: pointer;
   overflow: hidden !important;
-  border: 3px solid var(--bg-primary);
+  border: 2px solid var(--bg-primary);
   transition: all 0.3s;
 }
 
@@ -115,7 +115,7 @@
 .profile-icon-placeholder {
   color: var(--text-primary);
   font-weight: bold;
-  font-size: 20px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,7 +123,7 @@
 
 .dropdown-menu {
   position: absolute;
-  top: 55px;
+  top: 45px;
   right: 0;
   background: var(--bg-secondary);
   border-radius: 15px;
@@ -137,12 +137,12 @@
 .dropdown-menu button {
   display: block;
   width: 100%;
-  padding: 14px 20px;
+  padding: 12px 20px;
   border: none;
   background: none;
   text-align: left;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
   transition: background 0.2s;
   font-weight: 500;
@@ -160,12 +160,22 @@
 @media (max-width: 768px) {
   .main-header {
     grid-template-columns: auto 1fr auto;
-    padding: 15px 20px;
-    gap: 15px;
+    padding: 8px 20px;
+    gap: 12px;
   }
   
   .header-center {
     display: none;
+  }
+  
+  .logo img {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .profile-icon {
+    width: 32px;
+    height: 32px;
   }
 }
 
@@ -174,8 +184,7 @@
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 10px;
-  
+  margin-top: 8px;
   background: var(--bg-secondary);
   border: 2px solid var(--border-color);
   border-radius: 15px;
@@ -185,7 +194,7 @@
   overflow-y: auto;
   animation: slideDown 0.2s ease;
   color: var(--text-primary);
-  min-width: 300px; 
+  min-width: 300px;
 }
 
 @keyframes slideDown {
@@ -201,24 +210,24 @@
 
 .search-loading,
 .search-no-results {
-  padding: 15px 20px;
+  padding: 12px 20px;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
 }
 
 .search-results-list {
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 6px;
 }
 
 .search-result-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 15px;
-  margin: 4px 8px;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 3px 6px;
   background: transparent;
   border: none;
   border-radius: 12px;
@@ -226,7 +235,7 @@
   text-align: left;
   width: 100%;
   transition: all 0.2s;
-  color: var(--text-primary); 
+  color: var(--text-primary);
   background: var(--bg-primary);
 }
 
@@ -236,8 +245,8 @@
 }
 
 .search-result-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--bg-accent);
   overflow: hidden;
@@ -256,7 +265,7 @@
 
 .search-result-avatar span {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text-primary);
 }
 
@@ -271,14 +280,14 @@
 .search-result-nickname {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .search-result-username {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -286,10 +295,10 @@
 }
 
 .search-result-following {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--bg-header);
   background: var(--bg-accent-light);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 12px;
   font-weight: 500;
 }
@@ -317,22 +326,22 @@
   }
   
   .search-input {
-    padding: 10px 40px 10px 15px;
-    font-size: 13px;
+    padding: 8px 35px 8px 12px;
+    font-size: 12px;
   }
   
   .search-result-nickname {
-    font-size: 13px;
+    font-size: 12px;
   }
   
   .search-result-username {
-    font-size: 11px;
+    font-size: 10px;
   }
-  }
+}
 
-  .search-section-title {
-  padding: 12px 15px 8px;
-  font-size: 11px;
+.search-section-title {
+  padding: 10px 12px 6px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -340,28 +349,28 @@
   border-bottom: 1px solid var(--border-color);
   margin: 0;
   background: var(--bg-secondary);
-  }
+}
 
-  .search-tag-item {
+.search-tag-item {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  }
+}
 
-  .search-tag-name {
+.search-tag-name {
   color: var(--bg-header);
   font-weight: 700;
 }
 
 .search-tag-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--bg-header) 0%, var(--bg-accent) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: var(--text-light);
   flex-shrink: 0;
@@ -369,9 +378,8 @@
 
 .search-loading,
 .search-no-results {
-  padding: 15px 20px;
+  padding: 12px 20px;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
 }
-
