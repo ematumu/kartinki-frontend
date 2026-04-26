@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { API, API_BASE, apiFetch, uploadFile } from '../config'
+import Masonry from 'react-masonry-css'
 
 function ProfilePage({ username, currentUser, onBack, isLoggedIn, onViewPost }) {
   const [profile, setProfile] = useState(null)
@@ -253,7 +254,11 @@ function ProfilePage({ username, currentUser, onBack, isLoggedIn, onViewPost }) 
               {isOwner && <p>Опубликуйте что-нибудь первым</p>}
             </div>
           ) : (
-            <div className="posts-grid">
+            <Masonry
+              breakpointCols={{ default: 3, 1100: 2, 700: 1 }}
+              className="masonry-grid"
+              columnClassName="masonry-grid-column"
+            >
               {posts.map(post => (
                 <div key={post.id} className="post-card" onClick={() => onViewPost(post.id)}>
                   {post.image_path ? (
@@ -267,7 +272,7 @@ function ProfilePage({ username, currentUser, onBack, isLoggedIn, onViewPost }) 
                   )}
                 </div>
               ))}
-            </div>
+            </Masonry>
           )}
         </>
       )}

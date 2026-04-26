@@ -28,8 +28,9 @@ export const CONFIG = {
     },
     users: {
       profile: (username) => `/api/users/${username}`,
-      me: '/api/users/me',
+      me: '/api/auth/me',
       update: '/api/users/me',
+      delete: '/api/users/me',
       changePassword: '/api/users/me/change-password',
       uploadAvatar: '/api/users/me/avatar',
       follow: (username) => `/api/users/${username}/follow`,
@@ -40,7 +41,7 @@ export const CONFIG = {
     },
 
     tags: {
-      search: (query, limit = 10) => `/api/tags/search/?q=${encodeURIComponent(query)}&limit=${limit}`,  // ← ДОБАВЬ
+      search: (query, limit = 10) => `/api/tags/search/?q=${encodeURIComponent(query)}&limit=${limit}`
     },
   }
 }

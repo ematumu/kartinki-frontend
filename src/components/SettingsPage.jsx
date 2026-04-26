@@ -71,7 +71,7 @@ function SettingsPage({ user, onBack, onLogout }) {
     setDeleteError('')
 
     try {
-      await apiFetch('/api/users/me', {
+      await apiFetch(API.users.delete, {
         method: 'DELETE',
       })
 
@@ -90,7 +90,7 @@ function SettingsPage({ user, onBack, onLogout }) {
     setSavingPrivacy(true)
     
     try {
-      await apiFetch('/api/users/me', {
+      await apiFetch(API.users.update, {
         method: 'PATCH',
         body: JSON.stringify({ is_private: newValue })
       })

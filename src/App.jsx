@@ -9,7 +9,7 @@ import PostPage from "./components/PostPage"
 import SettingsPage from "./components/SettingsPage"
 import BookmarksPage from "./components/BookmarksPage"
 import TagPage from "./components/TagPage"
-import { API_BASE } from './config'
+import { API, API_BASE } from './config'
 
 function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -47,6 +47,8 @@ function App() {
       setIsLoggedIn(false)
       setCurrentView('feed')
       setRefreshKey(prev => prev + 1)
+
+      window.location.reload()
     }
 
     window.addEventListener('auth:expired', handleAuthExpired)
@@ -110,7 +112,7 @@ function App() {
     let finalUser = { ...userData }
 
     try {
-      const response = await fetch(`${API_BASE}/api/users/me`, {
+      const response = await fetch(`${API_BASE}${API.me}`, {
         headers: { 'Authorization': `Bearer ${finalUser.access_token}` }
       })
 
