@@ -24,7 +24,7 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0)
   const [showAuthPrompt, setShowAuthPrompt] = useState(false)
   const [selectedPostId, setSelectedPostId] = useState(null)
-  const [viewTag, setViewTag] = useState(null)
+  const [viewTagInfo, setViewTagInfo] = useState(null)
   const [showSearchAuthPrompt, setShowSearchAuthPrompt] = useState(false)
 
   useEffect(() => {
@@ -84,14 +84,13 @@ function App() {
   useEffect(() => {
     const handleNavigateToTag = (e) => {
       if (e.detail?.tagName) {
-        handleSearchTag(e.detail.tagName)
+        handleSearchTag(e.detail.tagName, null)
+      } else if (e.detail?.multiTags) {
+        handleSearchTag(null, e.detail.multiTags)
       }
     }
-    
     window.addEventListener('navigateToTag', handleNavigateToTag)
-    return () => {
-      window.removeEventListener('navigateToTag', handleNavigateToTag)
-    }
+    return () => window.removeEventListener('navigateToTag', handleNavigateToTag)
   }, [currentView])
 
   const openLogin = () => {
@@ -191,8 +190,14 @@ function App() {
     setViewPostId(null)
   }
 
-  const handleSearchTag = (tagName) => {
-    setViewTag(tagName)
+  const handleSearchTag = (tagName, multiTags) => {
+    if (multiTags && Array.isArray(multiTags)) {
+      setViewTagInfo(multiTags)
+    } else if (tagName) {
+      setViewTagInfo(tagName)
+    } else {
+      return
+    }
     setViewUsername(null)
     setViewPostId(null)
     setCurrentView('tag')
@@ -271,7 +276,8 @@ function App() {
         {currentView === 'tag' && (
           <TagPage
             key={refreshKey}
-            tagName={viewTag}
+            tagName={typeof viewTagInfo === 'string' ? viewTagInfo : null}
+            multiTags={Array.isArray(viewTagInfo) ? viewTagInfo : null}
             currentUser={user}
             onBack={handleBackToFeed}
             onViewPost={handleViewPost}

@@ -1,35 +1,41 @@
 import { useState, useEffect } from 'react'
-import { API, API_BASE, apiFetch } from '../config'
+import { apiFetch } from '../config'
 import PostCard from './PostCard'
 
 function TagPage({ tagName, currentUser, onBack, onViewPost, isLoggedIn }) {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [tagInfo, setTagInfo] = useState(null)
 
   useEffect(() => {
     if (tagName) {
-      loadTagPosts()
+      loadPosts()
     }
   }, [tagName])
 
-  const loadTagPosts = async () => {
+  const loadPosts = async () => {
     setLoading(true)
+    const rawTags = tagName.split(/\s+/).filter(t => t.trim())
+    const lowerTags = rawTags.map(t => t.toLowerCase())
+
     try {
-      const data = await apiFetch(`/api/tags/${encodeURIComponent(tagName)}/posts`)
-      setPosts(data || [])
-      
-      try {
-        const tagData = await apiFetch(`/api/tags/search/?q=${encodeURIComponent(tagName)}`)
-        const foundTag = tagData.find(t => t.name.toLowerCase() === tagName.toLowerCase())
-        if (foundTag) {
-          setTagInfo(foundTag)
+      if (lowerTags.length === 1) {
+        const data = await apiFetch(`/api/tags/${encodeURIComponent(lowerTags[0])}/posts`)
+        setPosts(data || [])
+      } else if (lowerTags.length > 1) {
+        const postsPerTag = await Promise.all(
+          lowerTags.map(tag => apiFetch(`/api/tags/${encodeURIComponent(tag)}/posts`).catch(() => []))
+        )
+        let intersection = postsPerTag[0] || []
+        for (let i = 1; i < postsPerTag.length; i++) {
+          const otherIds = new Set(postsPerTag[i].map(p => p.id))
+          intersection = intersection.filter(post => otherIds.has(post.id))
         }
-      } catch (err) {
-        console.error('Error loading tag info:', err)
+        setPosts(intersection)
+      } else {
+        setPosts([])
       }
     } catch (err) {
-      console.error('Error loading tag posts:', err)
+      console.error(err)
       setPosts([])
     } finally {
       setLoading(false)
@@ -39,33 +45,21 @@ function TagPage({ tagName, currentUser, onBack, onViewPost, isLoggedIn }) {
   return (
     <div className="tag-page">
       <div className="tag-header">
-        <button onClick={onBack} className="btn-back">
-          ← Назад
-        </button>
+        <button onClick={onBack} className="btn-back">← Назад</button>
         <h1>#{tagName}</h1>
-        {tagInfo && (
-          <p className="tag-posts-count">
-            {tagInfo.posts_count} {tagInfo.posts_count === 1 ? 'пост' : tagInfo.posts_count < 5 ? 'поста' : 'постов'}
-          </p>
-        )}
+        <p>{posts.length} постов</p>
       </div>
-
       {loading ? (
-        <div className="loading">Загрузка...</div>
+        <div>Загрузка...</div>
       ) : posts.length === 0 ? (
         <div className="empty-feed">
-          <h3>Пока нет постов с этим тегом</h3>
-          <p>Будьте первым, кто создаст пост с тегом #{tagName}</p>
+          <h3>Ничего не найдено</h3>
+          <p>Посты с тегом #{tagName} не найдены</p>
         </div>
       ) : (
         <div className="posts-grid">
           {posts.map(post => (
-            <PostCard 
-              key={post.id} 
-              post={post}
-              currentUser={currentUser}
-              onClick={() => onViewPost(post.id)}
-            />
+            <PostCard key={post.id} post={post} currentUser={currentUser} onClick={() => onViewPost(post.id)} />
           ))}
         </div>
       )}

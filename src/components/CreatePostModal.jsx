@@ -8,6 +8,8 @@ function CreatePostModal({ onClose, onSuccess, token }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const MAX_DESCRIPTION_LENGTH = 250
+
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -16,8 +18,24 @@ function CreatePostModal({ onClose, onSuccess, token }) {
     }
   }
 
+  const handleDescriptionChange = (e) => {
+    const text = e.target.value
+    if (text.length <= MAX_DESCRIPTION_LENGTH) {
+      setDescription(text)
+      setError('')
+    } else {
+      setError(`Максимум ${MAX_DESCRIPTION_LENGTH} символов`)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    if (description.length > MAX_DESCRIPTION_LENGTH) {
+      setError(`Описание не может превышать ${MAX_DESCRIPTION_LENGTH} символов`)
+      return
+    }
+    
     setError('')
     setLoading(true)
 
@@ -37,6 +55,8 @@ function CreatePostModal({ onClose, onSuccess, token }) {
       setLoading(false)
     }
   }
+
+  const remainingChars = MAX_DESCRIPTION_LENGTH - description.length
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -68,14 +88,30 @@ function CreatePostModal({ onClose, onSuccess, token }) {
           </div>
           
           <div className="form-group">
-            <textarea
-              className="form-textarea"
-              placeholder="Описание поста..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+            <div style={{ position: 'relative' }}>
+              <textarea
+                className="form-textarea"
+                placeholder={`Описание поста (максимум ${MAX_DESCRIPTION_LENGTH} символов)...`}
+                value={description}
+                onChange={handleDescriptionChange}
+                maxLength={MAX_DESCRIPTION_LENGTH}
+                rows={4}
+              />
+              <div style={{
+                textAlign: 'right',
+                fontSize: '12px',
+                marginTop: '5px',
+                color: remainingChars < 20 ? '#d4a5a5' : '#888'
+              }}>
+                {remainingChars} / {MAX_DESCRIPTION_LENGTH}
+              </div>
+            </div>
             
-            <button type="submit" className="auth-submit" disabled={loading}>
+            <button 
+              type="submit" 
+              className="auth-submit" 
+              disabled={loading || description.length > MAX_DESCRIPTION_LENGTH}
+            >
               {loading ? 'Публикация...' : 'Опубликовать'}
             </button>
           </div>

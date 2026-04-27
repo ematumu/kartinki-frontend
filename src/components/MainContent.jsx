@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { API, API_BASE } from '../config'
 import PostCard from './PostCard'
 import Masonry from 'react-masonry-css'
-const tags = ['Иллюстрация', 'Цифровое', 'Живопись', 'Фото', 'Скетч', 'Концепт', 'Аниме', 'Фэнтези']
+
 
 function MainContent({ isLoggedIn, user, feedType, onPostClick, onViewProfile }) {
   const [posts, setPosts] = useState([])
@@ -96,12 +96,6 @@ function MainContent({ isLoggedIn, user, feedType, onPostClick, onViewProfile })
           Подписки
         </button>
       )}
-      
-      <div className="tags-container">
-        {tags.map(tag => (
-          <span key={tag} className="tag">{tag}</span>
-        ))}
-      </div>
     </div>
 
       {loading ? (

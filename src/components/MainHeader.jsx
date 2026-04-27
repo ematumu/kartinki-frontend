@@ -3,6 +3,7 @@ import logo from '../assets/logo.png'
 import searchIcon from '../assets/icons/search.svg'
 import userIcon from '../assets/icons/user.svg'
 import { getAvatarUrl, API_BASE, apiFetch, API } from '../config'
+import './css/MainHeader.css'
 
 function MainHeader({ 
   isLoggedIn, 
@@ -19,12 +20,13 @@ function MainHeader({
   onSearchTag,
   onSearchAuthRequest
 }) {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [selectedTags, setSelectedTags] = useState([])
   const [searchResults, setSearchResults] = useState({ users: [], tags: [] })
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [searchLoading, setSearchLoading] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
-  
+
   const searchRef = useRef(null)
   const avatarUrl = getAvatarUrl(user)
 
@@ -45,7 +47,7 @@ function MainHeader({
       return
     }
 
-    if (searchQuery.trim().length < 2) {
+    if (searchInput.trim().length < 2) {
       setSearchResults({ users: [], tags: [] })
       setShowSearchResults(false)
       return
@@ -55,13 +57,27 @@ function MainHeader({
       setSearchLoading(true)
       try {
         const [usersData, tagsData] = await Promise.all([
-          apiFetch(API.users.search(searchQuery)).catch(() => []),
-          apiFetch(API.tags.search(searchQuery, 5)).catch(() => [])
+          apiFetch(API.users.search(searchInput)).catch(() => []),
+          apiFetch(API.tags.search(searchInput, 10)).catch(() => [])
         ])
+        
+        const normalizedInput = searchInput.toLowerCase()
+        const allTags = tagsData || []
+        
+        const matchedTags = allTags.filter(tag => 
+          tag.name.toLowerCase().includes(normalizedInput)
+        )
+        
+        const filteredTags = matchedTags
+          .filter(tag => !selectedTags.some(selected => selected.name === tag.name.toLowerCase()))
+          .map(tag => ({
+            ...tag,
+            name: tag.name.toLowerCase()
+          }))
         
         setSearchResults({
           users: usersData || [],
-          tags: tagsData || []
+          tags: filteredTags
         })
         setShowSearchResults(true)
       } catch (err) {
@@ -73,10 +89,22 @@ function MainHeader({
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [searchQuery, isLoggedIn])
+  }, [searchInput, isLoggedIn, selectedTags])
+
+  const addTag = (tag) => {
+    const normalizedName = tag.name.toLowerCase()
+    if (selectedTags.some(t => t.name === normalizedName)) return
+    setSelectedTags([...selectedTags, { name: normalizedName }])
+    setSearchInput('')
+    setShowSearchResults(false)
+  }
+
+  const removeTag = (tagName) => {
+    setSelectedTags(selectedTags.filter(t => t.name !== tagName))
+  }
 
   const handleUserSelect = (username) => {
-    setSearchQuery('')
+    setSearchInput('')
     setSearchResults({ users: [], tags: [] })
     setShowSearchResults(false)
     
@@ -89,46 +117,46 @@ function MainHeader({
     }
   }
 
-  const handleTagSelect = (tagName) => {
-    setSearchQuery('')
-    setSearchResults({ users: [], tags: [] })
-    setShowSearchResults(false)
-    
-    if (onSearchTag) {
-      onSearchTag(tagName)
-    } else {
-      window.dispatchEvent(new CustomEvent('navigateToTag', {
-        detail: { tagName }
-      }))
-    }
-  }
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault()
-    
+  const performSearch = () => {
     if (!isLoggedIn) {
-      if (onSearchAuthRequest) {
-        onSearchAuthRequest()
-      }
+      if (onSearchAuthRequest) onSearchAuthRequest()
       return
     }
-    
-    if (searchResults.users.length > 0) {
-      handleUserSelect(searchResults.users[0].username)
-    } else if (searchResults.tags.length > 0) {
-      handleTagSelect(searchResults.tags[0].name)
+    if (selectedTags.length === 0) return
+
+    const tagsQuery = selectedTags.map(t => t.name).join(' ')
+    if (onSearchTag) {
+      onSearchTag(tagsQuery)
+    } else {
+      window.dispatchEvent(new CustomEvent('navigateToTag', {
+        detail: { tagName: tagsQuery }
+      }))
     }
   }
 
   const handleSearchFocus = () => {
     if (!isLoggedIn) {
-      if (onSearchAuthRequest) {
-        onSearchAuthRequest()
-      }
+      if (onSearchAuthRequest) onSearchAuthRequest()
       return
     }
-    if (searchQuery.trim().length >= 2) {
+    if (searchInput.trim().length >= 2) {
       setShowSearchResults(true)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (searchInput.trim()) {
+        const newTagName = searchInput.trim().toLowerCase()
+        if (!selectedTags.some(t => t.name === newTagName)) {
+          setSelectedTags([...selectedTags, { name: newTagName }])
+        }
+        setSearchInput('')
+        setShowSearchResults(false)
+      } else if (selectedTags.length > 0) {
+        performSearch()
+      }
     }
   }
 
@@ -142,28 +170,43 @@ function MainHeader({
 
       <div className="header-center">
         <div className="search-container" ref={searchRef}>
-          <form onSubmit={handleSearchSubmit} style={{ display: 'flex', width: '100%' }}>
-            <input
-              type="text"
-              placeholder={isLoggedIn ? "Поиск" : "Войдите для поиска"}
-              className="search-input"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={handleSearchFocus}
-              readOnly={!isLoggedIn}
-              style={!isLoggedIn ? { cursor: 'not-allowed', opacity: 0.6 } : {}}
-            />
+          <div className="search-wrapper">
+            <div className="search-tags-container">
+              {selectedTags.map(tag => (
+                <div key={tag.name} className="search-tag-chip">
+                  <span className="search-tag-hash">#</span>
+                  <span className="search-tag-name">{tag.name}</span>
+                  <button
+                    type="button"
+                    className="search-tag-remove"
+                    onClick={() => removeTag(tag.name)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <input
+                type="text"
+                placeholder={isLoggedIn ? "Поиск" : "Войдите для поиска"}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onFocus={handleSearchFocus}
+                onKeyPress={handleKeyPress}
+                readOnly={!isLoggedIn}
+                className="search-input-field"
+              />
+            </div>
             <button 
-              type="submit" 
-              className="search-button"
-              disabled={!isLoggedIn}
-              style={!isLoggedIn ? { cursor: 'not-allowed', opacity: 0.6 } : {}}
+              onClick={performSearch}
+              className={`search-submit-btn ${selectedTags.length > 0 ? 'active' : ''}`}
+              disabled={!isLoggedIn || selectedTags.length === 0}
             >
               <img src={searchIcon} alt="Search" />
+              {selectedTags.length > 0 && <span>Найти</span>}
             </button>
-          </form>
+          </div>
 
-          {showSearchResults && (searchQuery.trim().length >= 2) && isLoggedIn && (
+          {showSearchResults && (searchInput.trim().length >= 2) && isLoggedIn && (
             <div className="search-results-dropdown">
               {searchLoading ? (
                 <div className="search-loading">Поиск...</div>
@@ -179,7 +222,6 @@ function MainHeader({
                           key={userItem.id}
                           className="search-result-item"
                           onClick={() => handleUserSelect(userItem.username)}
-                          style={{ cursor: 'pointer' }}
                         >
                           <div className="search-result-avatar">
                             {userItem.avatar_path ? (
@@ -198,7 +240,7 @@ function MainHeader({
                             <span className="search-result-username">@{userItem.username}</span>
                           </div>
                           {userItem.is_following && (
-                            <span className="search-result-following">✓ Подписан</span>
+                            <span className="search-result-following">Подписан</span>
                           )}
                         </button>
                       ))}
@@ -212,8 +254,7 @@ function MainHeader({
                         <button
                           key={tag.id}
                           className="search-result-item search-tag-item"
-                          onClick={() => handleTagSelect(tag.name)}
-                          style={{ cursor: 'pointer' }}
+                          onClick={() => addTag(tag)}
                         >
                           <div className="search-tag-icon">#</div>
                           <div className="search-result-info">
@@ -238,9 +279,9 @@ function MainHeader({
       <div className="header-right">
         {isLoggedIn ? (
           <>
-            <div className="profile-icon" onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }}>
+            <div className="profile-icon" onClick={() => setShowMenu(!showMenu)}>
               {avatarUrl ? (
-                <img src={avatarUrl} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={avatarUrl} alt={user.username} />
               ) : (
                 <span className="profile-icon-placeholder">{user?.username?.[0]?.toUpperCase()}</span>
               )}
@@ -257,9 +298,9 @@ function MainHeader({
             )}
           </>
         ) : (
-          <div className="profile-icon" onClick={onLoginClick} style={{ cursor: 'pointer' }}>
+          <div className="profile-icon" onClick={onLoginClick}>
             <span className="profile-icon-placeholder">
-              <img src={userIcon} alt="User" style={{width: '24px', height: '24px'}} />
+              <img src={userIcon} alt="User" />
             </span>
           </div>
         )}

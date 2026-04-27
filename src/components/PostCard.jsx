@@ -40,7 +40,12 @@ function PostCard({ post, onClick, onViewProfile, currentUser }) {
   return (
     <div className="post-card" onClick={onClick}>
       {imageUrl ? (
-        <img src={imageUrl} alt={post.description} className="post-card-image" />
+        <img 
+          src={imageUrl} 
+          alt={post.description} 
+          className="post-card-image"
+          style={{ filter: !currentUser ? 'blur(12px)' : 'none' }}
+        />
       ) : (
         <div className="post-card-placeholder">{post.description}</div>
       )}

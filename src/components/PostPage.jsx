@@ -7,6 +7,55 @@ import bookmarkOutline from '../assets/icons/bookmark-outline.svg'
 import bookmarkFilled from '../assets/icons/bookmark-filled.svg'
 import moreIcon from '../assets/icons/more.svg'
 import CommentsPanel from './CommentsPanel'
+import './css/PostPage.css'
+
+function ConfirmDeleteModal({ onConfirm, onClose, postDescription }) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>×</button>
+        
+        <div className="confirm-icon">
+          <svg 
+            width="64" 
+            height="64" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="M3 6h18" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+            <path d="M8 4V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" />
+            <line x1="10" y1="11" x2="10" y2="17" />
+            <line x1="14" y1="11" x2="14" y2="17" />
+          </svg>
+        </div>
+        
+        <h3>Удалить пост?</h3>
+        
+        <p>
+          Вы уверены, что хотите удалить этот пост?<br/>
+        </p>
+        
+        <p className="confirm-hint">
+          Это действие нельзя отменить.
+        </p>
+        
+        <div className="confirm-buttons">
+          <button className="btn btn-secondary" onClick={onClose}>
+            Отмена
+          </button>
+          <button className="btn btn-danger" onClick={onConfirm}>
+            Удалить
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted }) {
   const [post, setPost] = useState(null)
@@ -18,6 +67,7 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
   const [showActions, setShowActions] = useState(false)
   const [liking, setLiking] = useState(false)
   const [bookmarking, setBookmarking] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   
   const [showCommentsPanel, setShowCommentsPanel] = useState(false)
   const [commentsCount, setCommentsCount] = useState(0)
@@ -37,8 +87,18 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
       setCommentsCount(data.comments_count || 0)
       
       if (data.author_username) {
-        const authorData = await apiFetch(API.users.profile(data.author_username))
-        setAuthor(authorData)
+        try {
+          const authorData = await apiFetch(API.users.profile(data.author_username))
+          setAuthor(authorData)
+        } catch (authorErr) {
+          console.error('Error loading author profile:', authorErr)
+          setAuthor({
+            username: data.author_username,
+            nickname: data.author_username,
+            avatar_url: null,
+            avatar_path: null
+          })
+        }
       }
     } catch (err) {
       console.error('Error loading post:', err)
@@ -97,7 +157,7 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
   }
 
   const handleDelete = async () => {
-    if (!window.confirm('Удалить этот пост?')) return
+    setShowDeleteConfirm(false)
     
     try {
       await apiFetch(API.posts.delete(postId), { method: 'DELETE' })
@@ -106,6 +166,15 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
       console.error('Error deleting post:', err)
       alert('Ошибка удаления')
     }
+  }
+
+  const handleTagClick = (tagName) => {
+    const tag = typeof tagName === 'object' ? tagName.name : tagName
+    const normalizedTag = tag.toLowerCase()
+    
+    window.dispatchEvent(new CustomEvent('navigateToTag', {
+      detail: { tagName: normalizedTag }
+    }))
   }
 
   if (loading) {
@@ -130,7 +199,7 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
 
   return (
     <div className="post-page">
-      <button onClick={onBack} className="btn btn-secondary" style={{ marginBottom: '20px' }}>
+      <button onClick={onBack} className="btn btn-secondary back-button">
         ← Назад
       </button>
       
@@ -150,7 +219,6 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
             <div 
               className="post-author-avatar" 
               onClick={() => author && onViewProfile(author.username)}
-              style={{ cursor: 'pointer' }}
             >
               {avatarUrl ? (
                 <img src={avatarUrl} alt={author.username} />
@@ -162,7 +230,6 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
               <h3 
                 className="author-name"
                 onClick={() => author && onViewProfile(author.username)}
-                style={{ cursor: 'pointer' }}
               >
                 {author?.nickname || author?.username}
               </h3>
@@ -177,25 +244,12 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
           )}
 
           {post.tags && post.tags.length > 0 && (
-            <div style={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: '8px', 
-              marginTop: '15px',
-              marginBottom: '15px'
-            }}>
+            <div className="post-tags-container">
               {post.tags.map((tag, index) => (
                 <span 
                   key={index}
-                  style={{
-                    padding: '6px 14px',
-                    background: 'var(--bg-accent)',
-                    borderRadius: '20px',
-                    fontSize: '13px',
-                    color: 'var(--text-primary)',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
+                  className="post-tag"
+                  onClick={() => handleTagClick(tag)}
                 >
                   #{typeof tag === 'object' ? tag.name : tag}
                 </span>
@@ -209,61 +263,60 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
             <span>{new Date(post.created_at).toLocaleDateString('ru-RU')}</span>
           </div>
           
-        <div className="post-view-actions">
-          <button 
-            className={`action-btn ${isLiked ? 'liked' : ''}`}
-            onClick={handleLike}
-            disabled={liking}
-          >
-            <img 
-              src={isLiked ? heartFilled : heartOutline} 
-              alt="Like"
-              className={liking ? 'like-animation' : ''}
-            />
-            <span>{likesCount}</span>
-          </button>
-          
-          <button 
-            className="action-btn"
-            onClick={() => setShowCommentsPanel(true)}
-          >
-            <img src={commentIcon} alt="Comment" />
-            <span>Комментарии ({commentsCount})</span>
-          </button>
-          
-          <button 
-            className={`action-btn ${isBookmarked ? 'bookmarked' : ''}`}
-            onClick={handleBookmark}
-            disabled={bookmarking}
-          >
-            <img 
-              src={isBookmarked ? bookmarkFilled : bookmarkOutline} 
-              alt="Bookmark"
-              className={bookmarking ? 'like-animation' : ''}
-            />
-            <span>{isBookmarked ? 'В избранном' : 'В избранное'}</span>
-          </button>
-          
-          {/* ← КНОПКА ТОЛЬКО ДЛЯ АВТОРА */}
-          {isOwner && (
-            <div style={{ position: 'relative' }}>
-              <button 
-                className="action-btn" 
-                onClick={() => setShowActions(!showActions)}
-              >
-                <img src={moreIcon} alt="More" />
-              </button>
-              
-              {showActions && (
-                <div className="dropdown-menu" style={{ top: '40px', right: '0' }}>
-                  <button onClick={handleDelete} style={{ color: '#d4a5a5' }}>
-                    Удалить пост
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+          <div className="post-view-actions">
+            <button 
+              className={`action-btn ${isLiked ? 'liked' : ''}`}
+              onClick={handleLike}
+              disabled={liking}
+            >
+              <img 
+                src={isLiked ? heartFilled : heartOutline} 
+                alt="Like"
+                className={liking ? 'like-animation' : ''}
+              />
+              <span>{likesCount}</span>
+            </button>
+            
+            <button 
+              className="action-btn"
+              onClick={() => setShowCommentsPanel(true)}
+            >
+              <img src={commentIcon} alt="Comment" />
+              <span>Комментарии ({commentsCount})</span>
+            </button>
+            
+            <button 
+              className={`action-btn ${isBookmarked ? 'bookmarked' : ''}`}
+              onClick={handleBookmark}
+              disabled={bookmarking}
+            >
+              <img 
+                src={isBookmarked ? bookmarkFilled : bookmarkOutline} 
+                alt="Bookmark"
+                className={bookmarking ? 'like-animation' : ''}
+              />
+              <span>{isBookmarked ? 'В избранном' : 'В избранное'}</span>
+            </button>
+            
+            {isOwner && (
+              <div className="actions-wrapper">
+                <button 
+                  className="action-btn" 
+                  onClick={() => setShowActions(!showActions)}
+                >
+                  <img src={moreIcon} alt="More" />
+                </button>
+                
+                {showActions && (
+                  <div className="dropdown-menu actions-dropdown">
+                    <button onClick={() => setShowDeleteConfirm(true)} className="delete-post-btn">
+                      Удалить пост
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -272,6 +325,14 @@ function PostPage({ postId, currentUser, onBack, onViewProfile, onPostDeleted })
           postId={postId}
           currentUser={currentUser}
           onClose={() => setShowCommentsPanel(false)}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <ConfirmDeleteModal
+          onConfirm={handleDelete}
+          onClose={() => setShowDeleteConfirm(false)}
+          postDescription={post?.description}
         />
       )}
     </div>

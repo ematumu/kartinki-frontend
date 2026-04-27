@@ -68,7 +68,7 @@ export const apiFetch = async (endpoint, options = {}) => {
       const currentUser = localStorage.getItem('user')
       if (currentUser) {
         localStorage.removeItem('user')
-        window.dispatchEvent(new Event('auth:expired'))
+        window.location.reload()
       }
       return null
     }

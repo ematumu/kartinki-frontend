@@ -4,6 +4,10 @@
   padding: 30px;
 }
 
+.back-button {
+  margin-bottom: 20px;
+}
+
 .post-view {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -70,6 +74,7 @@
   color: var(--bg-accent);
   font-weight: bold;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .post-author-avatar img {
@@ -83,6 +88,12 @@
   font-size: 18px;
   font-weight: 600;
   margin: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.author-name:hover {
+  color: var(--bg-header);
 }
 
 .author-username {
@@ -98,6 +109,31 @@
   flex: 1;
 }
 
+.post-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.post-tag {
+  padding: 6px 14px;
+  background: var(--bg-accent);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.post-tag:hover {
+  background: var(--bg-header);
+  color: white;
+  transform: translateY(-2px);
+}
+
 .post-view-stats {
   display: flex;
   gap: 10px;
@@ -111,6 +147,7 @@
   gap: 15px;
   padding: 20px 0;
   border-top: 2px solid var(--bg-primary);
+  position: relative;
 }
 
 .action-btn {
@@ -158,6 +195,27 @@
   animation: likeAnimation 0.3s ease;
 }
 
+.actions-wrapper {
+  position: relative;
+}
+
+.actions-dropdown {
+  top: 40px;
+  right: 0;
+  position: absolute;
+}
+
+.delete-post-btn {
+  color: #ff6b6b !important;
+}
+
+.confirm-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
 @media (max-width: 1024px) {
   .post-view {
     grid-template-columns: 1fr;
@@ -165,5 +223,24 @@
   
   .post-view-image {
     max-height: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .post-page {
+    padding: 15px;
+  }
+  
+  .post-view-content {
+    padding: 25px;
+  }
+  
+  .post-view-actions {
+    gap: 10px;
+  }
+  
+  .action-btn {
+    padding: 8px 16px;
+    font-size: 12px;
   }
 }

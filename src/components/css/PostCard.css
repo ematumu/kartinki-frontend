@@ -143,3 +143,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.post-card-image,
+.post-view-image {
+  transition: filter 0.2s ease;
+}
