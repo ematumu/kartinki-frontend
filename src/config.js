@@ -1,5 +1,5 @@
 export const CONFIG = {
-  API_BASE: 'http://192.168.0.102:8000',
+  API_BASE: 'http://nekiy_ip:8000',
   
   API: {
     login: '/api/auth/login',
