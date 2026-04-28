@@ -6,6 +6,12 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   
+  const [fieldErrors, setFieldErrors] = useState({
+    username: '',
+    password: '',
+    password2: ''
+  })
+  
   const [loginData, setLoginData] = useState({ username: '', password: '' })
   const [registerData, setRegisterData] = useState({
     username: '',
@@ -22,10 +28,14 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
       }))
     }
     setActiveTab('login')
+    setError('')
+    setFieldErrors({ username: '', password: '', password2: '' })
   }
 
   const switchToRegister = () => {
     setActiveTab('register')
+    setError('')
+    setFieldErrors({ username: '', password: '', password2: '' })
   }
 
   const handleLogin = async (e) => {
@@ -63,25 +73,40 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
 
   const handleRegister = async (e) => {
     e.preventDefault()
+    
     setError('')
+    const newFieldErrors = { username: '', password: '', password2: '' }
+    let hasError = false
 
-    if (registerData.password.length < 6) {
-      setError('Пароль должен быть не менее 6 символов')
-      return
-    }
-    
-    if (registerData.password !== registerData.password2) {
-      setError('Пароли не совпадают')
-      return
+    if (!registerData.username) {
+      newFieldErrors.username = 'Введите имя пользователя'
+      hasError = true
+    } else if (registerData.username.length < 3) {
+      newFieldErrors.username = 'Имя пользователя должно быть не менее 3 символов'
+      hasError = true
+    } else if (!registerData.username.replace(/_/g, '').match(/^[a-zA-Z0-9]+$/)) {
+      newFieldErrors.username = 'Имя пользователя может содержать только буквы, цифры и _'
+      hasError = true
     }
 
-    if (!registerData.username.replace(/_/g, '').match(/^[a-zA-Z0-9]+$/)) {
-      setError('Имя пользователя может содержать только буквы, цифры и _')
-      return
+    if (!registerData.password) {
+      newFieldErrors.password = 'Введите пароль'
+      hasError = true
+    } else if (registerData.password.length < 6) {
+      newFieldErrors.password = 'Пароль должен быть не менее 6 символов'
+      hasError = true
     }
-    
-    if (registerData.username.length < 3) {
-      setError('Имя пользователя должно быть не менее 3 символов')
+
+    if (!registerData.password2) {
+      newFieldErrors.password2 = 'Подтвердите пароль'
+      hasError = true
+    } else if (registerData.password !== registerData.password2) {
+      newFieldErrors.password2 = 'Пароли не совпадают'
+      hasError = true
+    }
+
+    if (hasError) {
+      setFieldErrors(newFieldErrors)
       return
     }
 
@@ -124,6 +149,13 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
     }
   }
 
+  const handleFieldChange = (field, value) => {
+    setRegisterData({...registerData, [field]: value})
+    if (fieldErrors[field]) {
+      setFieldErrors({...fieldErrors, [field]: ''})
+    }
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -156,7 +188,6 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
               onChange={(e) => setLoginData({...loginData, username: e.target.value})}
               required 
               disabled={loading}
-              minLength={3}
             />
             <input 
               type="password" 
@@ -166,7 +197,6 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
               onChange={(e) => setLoginData({...loginData, password: e.target.value})}
               required 
               disabled={loading}
-              minLength={4}
             />
             <button type="submit" className="auth-submit" disabled={loading}>
               {loading ? 'Вход...' : 'Войти'}
@@ -177,42 +207,50 @@ function AuthModal({ mode, onClose, onAuthSuccess }) {
             <input 
               type="text" 
               placeholder="Имя пользователя" 
-              className="auth-input" 
+              className={`auth-input ${fieldErrors.username ? 'error' : ''}`}
               value={registerData.username}
-              onChange={(e) => setRegisterData({...registerData, username: e.target.value})}
-              required 
+              onChange={(e) => handleFieldChange('username', e.target.value)}
               disabled={loading}
-              minLength={3}
             />
+            {fieldErrors.username && (
+              <div className="field-error">{fieldErrors.username}</div>
+            )}
+            
             <input 
               type="text" 
-              placeholder="Никнейм" 
+              placeholder="Никнейм (отображаемое имя)" 
               className="auth-input" 
               value={registerData.nickname}
               onChange={(e) => setRegisterData({...registerData, nickname: e.target.value})}
               disabled={loading}
             />
+            
             <input 
               type="password" 
               placeholder="Пароль (мин. 6 символов)" 
-              className="auth-input" 
+              className={`auth-input ${fieldErrors.password ? 'error' : ''}`}
               value={registerData.password}
-              onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
-              required 
-              minLength={6}
+              onChange={(e) => handleFieldChange('password', e.target.value)}
               disabled={loading}
             />
+            {fieldErrors.password && (
+              <div className="field-error">{fieldErrors.password}</div>
+            )}
+            
             <input 
               type="password" 
               placeholder="Подтвердите пароль" 
-              className="auth-input" 
+              className={`auth-input ${fieldErrors.password2 ? 'error' : ''}`}
               value={registerData.password2}
-              onChange={(e) => setRegisterData({...registerData, password2: e.target.value})}
-              required 
+              onChange={(e) => handleFieldChange('password2', e.target.value)}
               disabled={loading}
             />
+            {fieldErrors.password2 && (
+              <div className="field-error">{fieldErrors.password2}</div>
+            )}
+            
             <button type="submit" className="auth-submit" disabled={loading}>
-              {loading ? 'Регистрация...' : 'Регистрация'}
+              {loading ? 'Регистрация...' : 'Зарегистрироваться'}
             </button>
           </form>
         )}

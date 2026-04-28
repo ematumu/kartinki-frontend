@@ -77,3 +77,16 @@
   background: #3D4F35;
   transform: translateY(-2px);
 }
+
+.auth-input.error {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.field-error {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  margin-left: 5px;
+}

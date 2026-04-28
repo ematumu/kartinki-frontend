@@ -15,6 +15,7 @@ function CreatePostModal({ onClose, onSuccess, token }) {
     if (file) {
       setImage(file)
       setPreview(URL.createObjectURL(file))
+      setError('')
     }
   }
 
@@ -31,6 +32,11 @@ function CreatePostModal({ onClose, onSuccess, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    if (!image && !description.trim()) {
+      setError('Добавьте хотя бы изображение или описание')
+      return
+    }
+    
     if (description.length > MAX_DESCRIPTION_LENGTH) {
       setError(`Описание не может превышать ${MAX_DESCRIPTION_LENGTH} символов`)
       return
@@ -41,7 +47,7 @@ function CreatePostModal({ onClose, onSuccess, token }) {
 
     try {
       const formData = new FormData()
-      formData.append('description', description)
+      formData.append('description', description || '')
       
       if (image) {
         formData.append('file', image)
@@ -57,6 +63,7 @@ function CreatePostModal({ onClose, onSuccess, token }) {
   }
 
   const remainingChars = MAX_DESCRIPTION_LENGTH - description.length
+  const isFormValid = image || description.trim()
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -67,15 +74,15 @@ function CreatePostModal({ onClose, onSuccess, token }) {
         {error && <div className="auth-error">{error}</div>}
         
         <form onSubmit={handleSubmit} className="create-post-form">
-          <div className={`upload-area ${preview ? 'has-image' : ''}`} onClick={() => document.getElementById('image-input').click()}>
+          <div 
+            className={`upload-area ${preview ? 'has-image' : ''}`} 
+            onClick={() => document.getElementById('image-input').click()}
+          >
             {preview ? (
               <img src={preview} alt="Preview" />
             ) : (
               <div>
                 <p>Нажмите для загрузки изображения</p>
-                <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-                  или перетащите файл сюда
-                </p>
               </div>
             )}
             <input
@@ -91,7 +98,7 @@ function CreatePostModal({ onClose, onSuccess, token }) {
             <div style={{ position: 'relative' }}>
               <textarea
                 className="form-textarea"
-                placeholder={`Описание поста (максимум ${MAX_DESCRIPTION_LENGTH} символов)...`}
+                placeholder={`Описание поста...`}
                 value={description}
                 onChange={handleDescriptionChange}
                 maxLength={MAX_DESCRIPTION_LENGTH}
@@ -110,7 +117,11 @@ function CreatePostModal({ onClose, onSuccess, token }) {
             <button 
               type="submit" 
               className="auth-submit" 
-              disabled={loading || description.length > MAX_DESCRIPTION_LENGTH}
+              disabled={loading || !isFormValid}
+              style={{
+                opacity: !isFormValid ? 0.5 : 1,
+                cursor: !isFormValid ? 'not-allowed' : 'pointer'
+              }}
             >
               {loading ? 'Публикация...' : 'Опубликовать'}
             </button>
