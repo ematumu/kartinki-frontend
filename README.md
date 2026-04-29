@@ -1,4 +1,4 @@
-# <img scr="https://github.com/ematumu/kartinki-frontend/src/assets/logo.png" width="80" height="80"> Фронтенд платформы для художников и иллюстраторов - "Нить"
+# <img src="https://github.com/ematumu/kartinki-frontend/src/assets/logo.png" width="80" height="80"> Фронтенд платформы для художников и иллюстраторов - "Нить"
 
 
 ## Функционал
