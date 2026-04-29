@@ -1,16 +1,86 @@
-# React + Vite
+# <img scr="https://github.com/ematumu/kartinki-frontend/src/assets/logo.png" width="80" height="80"> Фронтенд платформы для художников и иллюстраторов - "Нить"
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Функционал
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Регистрация и аутентификация
+- Профили, настройка информации профиля, настройка публичности профиля
+- Система подписок на пользователей
+- Поиск по пользователям
+- Публикация постов с изображением
+- Поддержка системы тегов, поиск по тегам, популярные
+- Взаимодействие с постами, комментарии, лайки, добавление в избранное
+- Управление пользователями, постами, комментариями, тегами через админ-интерфейс
 
-## React Compiler
+## Структура проекта
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+```
+kartinki-frontend/
+├── src/
+│   ├── assets/             # Изображения, иконки, шрифты
+│   │   ├── icons/          # SVG-иконки
+│   │   └── logo.png
+│   │
+│   ├── components/         # React-компоненты
+│   │   ├── MainHeader.jsx      # Шапка с поиском и меню
+│   │   ├── MainContent.jsx     # Лента постов с фильтрами
+│   │   ├── AuthModal.jsx       # Модальное окно входа/регистрации
+│   │   ├── CreatePostModal.jsx # Форма создания поста
+│   │   ├── ProfilePage.jsx     # Страница профиля пользователя
+│   │   ├── PostPage.jsx        # Страница просмотра поста
+│   │   ├── CommentsPanel.jsx   # Панель комментариев
+│   │   ├── SettingsPage.jsx    # Настройки аккаунта
+│   │   ├── BookmarksPage.jsx   # Страница избранного
+│   │   ├── TagPage.jsx         # Страница постов по тегу
+│   │   └── PostCard.jsx        # Карточка поста
+│   │
+│   ├── config.js           # Конфигурация API и утилиты запросов
+│   ├── App.jsx             # Корневой компонент с роутингом
+│   ├── App.css             # Глобальные стили и переменные
+│   └── main.jsx            # Точка входа приложения
+│
+├── index.html              # HTML-шаблон
+├── package.json            # Зависимости и скрипты
+├── vite.config.js          # Конфигурация Vite
+└── README.md
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Стек
+- Фреймворк - React 18
+- Сборщик - Vite
+- Маршрутизация - кастомная (без React Router, через состояние в App.jsx)
+- HTTP-клиент - Fetch API с обёрткой
+- Стилизация - CSS модули + CSS переменные
+- Адаптивная сетка - React Masonry CSS
+- Иконки - SVG
+- Хранение состояния - useState, useEffect (React Hooks)
+
+## Установка
+
+Клонирование репозитория
+```bash
+git clone https://github.com/ematumu/kartinki-frontend.git
+cd kartinki-frontend
+```
+
+Установка зависимостей
+```bash
+npm install
+```
+
+## Настройка конфигурации
+
+Отредактируйте `src/config.js`:
+
+```javascript
+export const CONFIG = {
+  API_BASE: 'http://0.0.0.0:8000',  // ← Адрес вашего бэкенда
+  // ...
+}
+```
+
+## Запуск в режиме разработки
+```bash
+npm run dev
+```
