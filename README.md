@@ -54,8 +54,6 @@ kartinki-frontend/
 - HTTP-клиент - Fetch API с обёрткой
 - Стилизация - CSS модули + CSS переменные
 - Адаптивная сетка - React Masonry CSS
-- Иконки - SVG
-- Хранение состояния - useState, useEffect (React Hooks)
 
 ## Установка
 
